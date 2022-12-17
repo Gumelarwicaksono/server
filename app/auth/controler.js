@@ -38,7 +38,6 @@ const localStrategy = async (email, password, done) => {
 };
 const login = async (req, res, next) => {
   passport.authenticate('local', async function (err, user) {
-    console.log(user);
     if (err) return next(err);
 
     if (!user) return res.json({ error: 1, message: 'Email or password incorect!' });
@@ -51,36 +50,34 @@ const login = async (req, res, next) => {
       token: signed,
     });
   })(req, res, next);
-  console.log('dari login :', req);
 };
 
 const logout = async (req, res, next) => {
   let token = getToken(req);
-  console.log('dari log out :', token);
+
   let user = await User.findOneAndUpdate({ token: { $in: [token] } }, { $pull: { token: token } }, { useFindAndModify: false });
+  console.log(user);
   if (!token || !user) {
     res.json({
       error: 1,
       message: 'No user found!!',
     });
-    return res.json({
-      error: 0,
-      message: 'Logout sucsess',
-    });
   }
+  return res.json({
+    error: 0,
+    message: 'Logout sucsess',
+  });
 };
 
 const me = (req, res, next) => {
-  let token = getToken(req);
-  if (!token.user) {
+  if (!req.user) {
     res.json({
       err: 1,
       message: `you're not login or token expired`,
     });
   }
 
-  res.json(token.user);
-  console.log('dari me :', token);
+  res.json(req.user);
 };
 module.exports = {
   register,

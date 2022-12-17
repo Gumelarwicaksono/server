@@ -1,6 +1,5 @@
 function getToken(req) {
-  let token = req.headers.authorization ? req.headers.authorization.replace('Bearer', '') : null;
-  // console.log('dari util :', token);
+  let token = req.headers.authorization ? req.headers.authorization.replace('Bearer ', '') : null;
   return token && token.length ? token : null;
 }
 

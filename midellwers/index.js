@@ -7,11 +7,10 @@ function decodeToken() {
   return async function (req, res, next) {
     try {
       let token = getToken(req);
-      // console.log('dari decode :', token);
+
       if (!token) return next();
-      console.log('dari decode :', token);
+
       req.user = jwt.verify(token, secretKey);
-      console.log('dari decode :', req.user);
 
       let user = await User.findOne({ token: { $in: [token] } });
       if (!user) {
@@ -20,11 +19,7 @@ function decodeToken() {
           message: 'token expired',
         });
       }
-      // console.log('dari user decode :', user);
-      // console.log('dari decode :', token);
-      // console.log('dari decode req :', req);
     } catch (err) {
-      console.log(err);
       if (err && err.name === 'JsonWebTokenError') {
         return res.json({
           error: 1,
