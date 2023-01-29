@@ -7,11 +7,11 @@ const store = async (req, res, next) => {
     await category.save();
     return res.json(category);
   } catch (error) {
-    if (error && error.name === 'validationError') {
+    if (error && error.name === 'ValidationError') {
       return res.json({
         error: 1,
         message: error.message,
-        fileds: error.errors,
+        fields: error.errors,
       });
     }
     next(error);
@@ -26,11 +26,11 @@ const update = async (req, res, next) => {
     });
     return res.json(category);
   } catch (error) {
-    if (error && error.name === 'validationError') {
+    if (error && error.name === 'ValidationError') {
       return res.json({
         error: 1,
         message: error.message,
-        fileds: error.errors,
+        fields: error.errors,
       });
     }
     next(error);
@@ -42,11 +42,11 @@ const index = async (req, res, next) => {
     let category = await Categoryes.find();
     return res.json(category);
   } catch (error) {
-    if (error && error.name === 'validationError') {
+    if (error && error.name === 'ValidationError') {
       return res.json({
         error: 1,
         message: error.message,
-        fileds: error.errors,
+        fields: error.errors,
       });
     }
     next(error);
@@ -58,11 +58,11 @@ const destroy = async (req, res, next) => {
     let category = await Categoryes.findByIdAndDelete(req.params.id);
     return res.json(category);
   } catch (error) {
-    if (error && error.name === 'validationError') {
+    if (error && error.name === 'ValidationError') {
       return res.json({
         error: 1,
         message: error.message,
-        fileds: error.errors,
+        fields: error.errors,
       });
     }
     next(error);

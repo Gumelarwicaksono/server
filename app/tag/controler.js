@@ -1,4 +1,6 @@
 const Tag = require('./model');
+const Category = require('../category/model');
+const Product = require('../product/model');
 
 const store = async (req, res, next) => {
   try {
@@ -11,7 +13,7 @@ const store = async (req, res, next) => {
       return res.json({
         error: 1,
         message: error.message,
-        fileds: error.errors,
+        fields: error.errors,
       });
     }
     next(error);
@@ -31,7 +33,7 @@ const update = async (req, res, next) => {
       return res.json({
         error: 1,
         message: error.message,
-        fileds: error.errors,
+        fields: error.errors,
       });
     }
     next(error);
@@ -47,10 +49,39 @@ const index = async (req, res, next) => {
       return res.json({
         error: 1,
         message: error.message,
-        fileds: error.errors,
+        fields: error.errors,
       });
     }
     next(error);
+  }
+};
+
+const showTagByCategory = async (req, res, next) => {
+  try {
+    const { category } = req.params;
+    const category_id = await Category.findOne({ name: { $regex: category, $options: 'i' } });
+    const products = await Product.find({ category: category_id });
+    let tagIds = [];
+    products.forEach((product) => {
+      product.tags.forEach((tag) => {
+        if (!tagIds.includes(tag)) {
+          tagIds.push(tag);
+        }
+      });
+    });
+
+    const tags = await Tag.find({ _id: { $in: tagIds } });
+    res.json(tags);
+  } catch (err) {
+    if (err && err.name === 'ValidationError') {
+      return res.json({
+        error: 1,
+        message: err.message,
+        fields: err.errors,
+      });
+    }
+
+    next(err);
   }
 };
 
@@ -63,10 +94,9 @@ const destroy = async (req, res, next) => {
       return res.json({
         error: 1,
         message: error.message,
-        fileds: error.errors,
+        fields: error.errors,
       });
     }
-    s;
     next(error);
   }
 };
@@ -76,4 +106,5 @@ module.exports = {
   index,
   update,
   destroy,
+  showTagByCategory,
 };

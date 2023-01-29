@@ -43,7 +43,7 @@ const store = async (req, res, next) => {
     await CartItem.deleteMany({ user: req.user._id });
     return res.json(order);
   } catch (error) {
-    if (error && error.name === 'validationError') {
+    if (error && error.name === 'ValidationError') {
       return res.json({
         error: 1,
         message: error.message,
@@ -58,13 +58,13 @@ const index = async (req, res, next) => {
   try {
     let { skip = 0, limit = 10 } = req.query;
     let count = await Order.find({ user: req.user._id }).countDocuments();
-    let orders = await Order.find({ user: req.user_id }).skip(parseInt(skip)).limit(parseInt(limit)).populate('order_items').sort('-createdAt');
+    let orders = await Order.find({ user: req.user._id }).skip(parseInt(skip)).limit(parseInt(limit)).populate('order_items').sort('-createdAt');
     return res.json({
       data: orders.map((order) => order.toJSON({ virtuals: true })),
       count,
     });
   } catch (error) {
-    if (error && error.name === 'validationError') {
+    if (error && error.name === 'ValidationError') {
       return res.json({
         error: 1,
         message: error.message,

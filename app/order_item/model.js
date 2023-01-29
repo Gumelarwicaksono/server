@@ -4,7 +4,7 @@ const { Schema, model } = mongoose;
 const orderItemSchema = Schema({
   name: {
     type: String,
-    minlength: [5, 'panjang nama makanan minimal 5 karakter'],
+    minlength: [5, 'panjang nama makanan minimal 50 karakter'],
     required: [true, 'name must be filled'],
   },
   price: {
@@ -13,9 +13,9 @@ const orderItemSchema = Schema({
   },
   qty: {
     type: Number,
-    minlength: [5, 'panjang nama makanan minimal 5 karakter'],
-    required: [true, 'kualitas harus di isi !'],
-    min: [1, 'kualitas minimal 1'],
+
+    required: [true, 'kuantitas harus di isi !'],
+    min: [1, 'kuantitas minimal 1'],
   },
   product: {
     type: Schema.Types.ObjectId,

@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const { Schema, model } = mongoose;
 const AutoIncrement = require('mongoose-sequence')(mongoose);
+const Invoice = require('../invoice/model');
 
 const orderSchema = Schema(
   {
@@ -34,7 +35,7 @@ orderSchema.virtual('items_count').get(function () {
 });
 orderSchema.post('save', async function () {
   let sub_total = this.order_items.reduce((total, item) => (total += item.price * item.qty), 0);
-  let invoice = new invoice({
+  let invoice = new Invoice({
     user: this.user,
     order: this._id,
     sub_total: sub_total,
