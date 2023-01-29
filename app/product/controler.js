@@ -4,6 +4,7 @@ const Product = require('./model');
 const config = require('../config');
 const Category = require('../category/model');
 const Tag = require('../tag/model');
+const { match } = require('assert');
 
 const store = async (req, res, next) => {
   try {
@@ -40,7 +41,7 @@ const store = async (req, res, next) => {
       src.pipe(dest);
       src.on('end', async () => {
         try {
-          let product = new Product({ ...payload, image_url: filename });
+          let product = new Product({ ...payload, image_url: `http://localhost:3000/images/${filename}` });
           await product.save();
           return res.json(product);
         } catch (error) {
@@ -114,11 +115,16 @@ const update = async (req, res, next) => {
           if (fs.existsSync(curenImage)) {
             fs.unlinkSync(curenImage);
           }
+
           //
-          product = await Product.findByIdAndUpdate(id, payload, {
-            new: true,
-            runValidators: true,
-          });
+          product = await Product.findByIdAndUpdate(
+            id,
+            { ...payload, image_url: `http://localhost:3000/images/${filename}` },
+            {
+              new: true,
+              runValidators: true,
+            }
+          );
 
           return res.json(product);
         } catch (error) {
@@ -157,7 +163,7 @@ const update = async (req, res, next) => {
 
 const index = async (req, res, next) => {
   try {
-    let { skip = 0, limit = 10, q = '', category = '', tags = [] } = req.query;
+    let { skip = 0, limit = 4, q = '', category = '', tags = [] } = req.query;
     let criteria = {};
     if (q.length) {
       criteria = {
@@ -175,19 +181,25 @@ const index = async (req, res, next) => {
         criteria = { ...criteria, category: categoryResult._id };
       }
     }
-    if (tags.length > 0) {
+    if (tags.length) {
       let tagsResult = await Tag.find({ name: { $in: tags } });
       if (tagsResult.length) {
         criteria = { ...criteria, tags: tagsResult.map((tag) => tag._id) };
       }
     }
+
     //
     let count = await Product.find().countDocuments();
+
     //
     let product = await Product.find(criteria).skip(parseInt(skip)).limit(parseInt(limit)).populate('category').populate('tags');
     return res.json({
       data: product,
       count,
+      skip,
+      limit,
+      tags,
+      category,
     });
   } catch (error) {
     next(error);

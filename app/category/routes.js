@@ -1,9 +1,10 @@
 const router = require('express').Router();
 const { store, index, update, destroy } = require('./controler');
+const { police_check } = require('../../midellwers');
 
-router.get('/categoryes', index);
-router.put('/categoryes/:id', update);
-router.post('/categoryes', store);
-router.delete('/categoryes/:id', destroy);
+router.get('/categories', index);
+router.put('/categories/:id', police_check('update', 'Category'), update);
+router.post('/categories', police_check('create', 'Category'), store);
+router.delete('/categories/:id', police_check('delete', 'Category'), destroy);
 
 module.exports = router;

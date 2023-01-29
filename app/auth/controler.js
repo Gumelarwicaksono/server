@@ -38,17 +38,27 @@ const localStrategy = async (email, password, done) => {
 };
 const login = async (req, res, next) => {
   passport.authenticate('local', async function (err, user) {
-    if (err) return next(err);
+    try {
+      if (err) return next(err);
 
-    if (!user) return res.json({ error: 1, message: 'Email or password incorect!' });
+      if (!user) return res.json({ error: 1, message: 'Email or password incorect!' });
 
-    let signed = jwt.sign(user, secretKey);
-    await User.findByIdAndUpdate(user._id, { $push: { token: signed } });
-    res.json({
-      message: 'login sucsessfuly',
-      user,
-      token: signed,
-    });
+      let signed = jwt.sign(user, secretKey);
+      await User.findByIdAndUpdate(user._id, { $push: { token: signed } });
+      res.json({
+        message: 'login sucsessfuly',
+        user,
+        token: signed,
+      });
+    } catch (err) {
+      if (err) {
+        return res.json({
+          error: 1,
+          message: err.message,
+          fields: err.errors,
+        });
+      }
+    }
   })(req, res, next);
 };
 
@@ -56,7 +66,6 @@ const logout = async (req, res, next) => {
   let token = getToken(req);
 
   let user = await User.findOneAndUpdate({ token: { $in: [token] } }, { $pull: { token: token } }, { useFindAndModify: false });
-  console.log(user);
   if (!token || !user) {
     res.json({
       error: 1,

@@ -9,6 +9,11 @@ const productRute = require('./app/product/routes');
 const categoryRute = require('./app/category/routes');
 const tagRute = require('./app/tag/routes');
 const authRute = require('./app/auth/routes');
+const deliveryAddressRute = require('./app/deliveryAddress/routes');
+const cartRute = require('./app/cart/routes');
+const orderRute = require('./app/order/routes');
+const invoiceRute = require('./app/invoice/routes');
+const http = require('http');
 
 var app = express();
 
@@ -16,18 +21,35 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
-app.use(cors());
+app.use(
+  cors({
+    credentials: true,
+    origin: 'http://localhost:3001/',
+  })
+);
+
+http.createServer((req, res) => {
+  res.setHeader('Content-Type', 'text/html');
+  res.write('<html><body>');
+  res.write('<h1>Hello World</h1>');
+  res.end();
+});
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use('/images', express.static(path.join(__dirname, 'public/images/products')));
 
 app.use(decodeToken());
 app.use('/auth', authRute);
 app.use('/api', productRute);
 app.use('/api', categoryRute);
 app.use('/api', tagRute);
+app.use('/api', deliveryAddressRute);
+app.use('/api', cartRute);
+app.use('/api', orderRute);
+app.use('/api', invoiceRute);
 
 app.use('/', function (req, res) {
   res.render('index', {
