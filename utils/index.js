@@ -9,7 +9,7 @@ function getToken(req) {
 
 const policies = {
   guest(user, { can }) {
-    can('read', 'product');
+    can('read', 'Product');
   },
   users(user, { can }) {
     can('view', 'Order');
