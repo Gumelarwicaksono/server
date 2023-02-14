@@ -9,10 +9,11 @@ const productRute = require('./app/product/routes');
 const categoryRute = require('./app/category/routes');
 const tagRute = require('./app/tag/routes');
 const authRute = require('./app/auth/routes');
-const deliveryAddressRute = require('./app/deliveryAddress/routes');
+const deliveryAddressRute = require('./app/deliveryAddress/router');
 const cartRute = require('./app/cart/routes');
 const orderRute = require('./app/order/routes');
 const invoiceRute = require('./app/invoice/routes');
+const regionRouter = require('./app/region/routes');
 const http = require('http');
 
 var app = express();
@@ -21,12 +22,7 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
-app.use(
-  cors({
-    credentials: true,
-    origin: 'http://localhost:3001/',
-  })
-);
+app.use(cors());
 
 http.createServer((req, res) => {
   res.setHeader('Content-Type', 'text/html');
@@ -50,6 +46,7 @@ app.use('/api', deliveryAddressRute);
 app.use('/api', cartRute);
 app.use('/api', orderRute);
 app.use('/api', invoiceRute);
+app.use('/', regionRouter);
 
 app.use('/', function (req, res) {
   res.render('index', {

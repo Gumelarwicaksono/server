@@ -38,6 +38,7 @@ const store = async (req, res, next) => {
         product: item.product._id,
       }))
     );
+
     orderItem.forEach((item) => order.order_items.push(item));
     order.save();
     await CartItem.deleteMany({ user: req.user._id });
